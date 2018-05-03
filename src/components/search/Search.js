@@ -14,33 +14,28 @@ class Search extends Component {
     images: []
   };
 
+  fetchingData = (num) => {
+    const { apiUrl, apiKey, searchText } = this.state;
+
+    axios.get(`${this.state.apiUrl}/?key=${this.state.apiKey}&q=${this.state.searchText}&image_type=photo&per_page=${num}&safesearch=true`)
+        .then(res => this.setState({ images: res.data.hits }))
+        .catch(err => console.log(err));
+  };
+
   onTextChange = e => {
     const val = e.target.value;
     this.setState({ [e.target.name]: val }, () => {
       if (val === '') {
         this.setState({ images: [] });
       } else {
-        axios
-          .get(
-            `${this.state.apiUrl}/?key=${this.state.apiKey}&q=${
-              this.state.searchText
-            }&image_type=photo&per_page=${this.state.amount}&safesearch=true`
-          )
-          .then(res => this.setState({ images: res.data.hits }))
-          .catch(err => console.log(err));
+        this.fetchingData(this.state.amount)
       }
     });
   };
 
   onAmountChange = (e, index, value) => {
     this.setState({ amount: value });
-    axios.get(
-            `${this.state.apiUrl}/?key=${this.state.apiKey}&q=${
-              this.state.searchText
-            }&image_type=photo&per_page=${value}&safesearch=true`
-          )
-          .then(res => this.setState({ images: res.data.hits }))
-          .catch(err => console.log(err));
+    this.fetchingData(value);
   }
 
   render() {
